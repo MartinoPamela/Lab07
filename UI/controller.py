@@ -1,7 +1,7 @@
 import flet as ft
 
 from UI.view import View
-from model.model import Model
+from model.modello import Model
 
 
 class Controller:
@@ -14,12 +14,26 @@ class Controller:
         self._mese = 0
 
     def handle_umidita_media(self, e):
-        pass
-
-
+        if self._mese == 0:  # fare sempre il check dell'input
+            self._view.create_alert("Selezionare un mese")
+            return
+        umidita_media = self._model.get_umidita_media(self._mese)  # tutte le operazioni logiche vanno nel modello
+        self._view.lst_result.controls.clear()
+        self._view.lst_result.controls.append(ft.Text(f"L'umidita media nel mese selezionato è:"))
+        for citta_media in umidita_media:
+            self._view.lst_result.controls.append(ft.Text(f"{citta_media[0]}: {citta_media[1]}"))
+        self._view.update_page()
 
     def handle_sequenza(self, e):
-        pass
+        if self._mese == 0:
+            self._view.create_alert("Selezionare un mese")
+            return
+        sequenza_ottima, costo = self._model.soluzione_ottima(self._mese)
+        self._view.lst_result.controls.clear()
+        self._view.lst_result.controls.append(ft.Text(f"La sequenza ottima ha costo {costo} ed è:"))
+        for stop in sequenza_ottima:
+            self._view.lst_result.controls.append(ft.Text(stop))
+        self._view.update_page()
 
     def read_mese(self, e):
         self._mese = int(e.control.value)
